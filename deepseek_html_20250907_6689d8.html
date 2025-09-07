@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گادري - قائمة الطعام</title>
+    <!-- Google Fonts for a modern look - Changed to Cairo for better character support -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* --- General Styles --- */
+        :root {
+            --gold: #D4AF37;
+            --dark-bg: #121212;
+            --light-bg: #1E1E1E;
+            --text-light: #E0E0E0;
+            --text-dark: #333;
+            --border-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            /* Changed font-family to Cairo */
+            font-family: 'Cairo', sans-serif;
+            background: #000;
+            color: var(--text-light);
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: var(--dark-bg);
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        /* --- Header & Banner Styles --- */
+        .header {
+            /* تم تغيير الصورة إلى صورة أكثر احترافية */
+            background-image: linear-gradient(to top, rgba(18, 18, 18, 1) 0%, rgba(18, 18, 18, 0.2) 60%, rgba(18, 18, 18, 0) 100%), url('https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?q=80&w=1935&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            padding: 80px 20px 30px;
+            text-align: center;
+            position: relative;
+            border-bottom: 2px solid var(--gold);
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .restaurant-name {
+            font-size: 48px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 15px rgba(0,0,0,0.8);
+            letter-spacing: 1px;
+        }
+        
+        .restaurant-subtitle {
+            color: var(--text-light);
+            font-size: 18px;
+            margin-top: 5px;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.9);
+        }
+
+        .language-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .language-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+        
+        /* --- Category Tabs --- */
+        .category-tabs {
+            display: flex;
+            padding: 20px 15px 15px;
+            gap: 12px;
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+        .category-tabs::-webkit-scrollbar {
+            display: none; /* Safari and Chrome */
+        }
+        
+        .category-tab {
+            background: var(--light-bg);
+            color: var(--text-light);
+            padding: 10px 25px;
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .category-tab.active {
+            background: var(--gold);
+            color: var(--text-dark);
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            transform: translateY(-3px);
+        }
+
+        /* --- Menu Content --- */
+        .menu-content {
+            padding: 10px 15px 20px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-item {
+            background: var(--light-bg);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .menu-item:hover {
+            border-color: var(--gold);
+            transform: scale(1.03);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        .item-details {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .item-image {
+            width: 90px;
+            height: 90px;
+            background-color: #222;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 28px;
+            flex-shrink: 0; /* Prevent image from shrinking */
+        }
+        
+        .item-info {
+            padding: 15px;
+            flex-grow: 1;
+        }
+        
+        .item-name {
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .item-price {
+            color: var(--gold);
+            font-size: 17px;
+            font-weight: bold;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px dashed var(--gold);
+        }
+        
+        /* --- Admin Panel & Modal Styles (Adapted to new theme) --- */
+        .admin-panel, .modal-content {
+            background: var(--dark-bg);
+        }
+        
+        .login-form, .admin-section, .modal-content {
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+        }
+        
+        .form-group input, .form-group select {
+            background-color: var(--dark-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+        
+        .btn {
+            background: var(--gold);
+            color: var(--text-dark);
+            font-weight: bold;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0, 0.3);
+        }
+        
+        .btn:hover {
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: transparent;
+            border: 1px solid #ff4136;
+            color: #ff4136;
+        }
+        
+        .btn-danger:hover {
+            background: #ff4136;
+            color: #fff;
+        }
+        
+        .admin-header h2, .admin-section h3 {
+            border-bottom: 1px solid var(--gold);
+        }
+        
+        .section-item, .menu-item-admin {
+            background: var(--dark-bg);
+            border-left: 3px solid var(--gold);
+        }
+        
+        .modal-content {
+            border: 1px solid var(--gold);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+
+        /* --- Copied from original for functionality --- */
+        .admin-panel { display: none; min-height: 100vh; padding: 20px; }
+        .login-form { max-width: 350px; margin: 50px auto; padding: 30px; text-align: center; }
+        .login-form h2 { margin-bottom: 30px; font-size: 24px; }
+        .form-group { margin-bottom: 20px; text-align: right; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border-radius: 8px; font-size: 16px; }
+        .btn { padding: 12px 25px; border-radius: 8px; font-size: 16px; cursor: pointer; margin: 5px; }
+        .admin-content { display: none; }
+        .admin-header { padding: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .admin-section { padding: 20px; margin-bottom: 20px; }
+        .admin-section h3 { margin-bottom: 20px; padding-bottom: 10px; }
+        .section-item, .menu-item-admin { padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 2000; }
+        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 30px; max-width: 400px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal h3 { margin-bottom: 20px; text-align: center; }
+        .close-modal { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 28px; cursor: pointer; color: #888; transition: color 0.3s ease; }
+        .close-modal:hover { color: #fff; }
+        .error-message { color: #ff4136; text-align: center; margin: 10px 0; padding: 10px; background: rgba(255, 65, 54, 0.1); border-radius: 5px; border: 1px solid #ff4136; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Customer View -->
+        <div id="customer-view">
+            <header class="header">
+                <button class="language-btn" id="lang-btn" onclick="toggleLanguage()">EN</button>
+                <div class="header-content">
+                    <h1 class="restaurant-name" data-translate="restaurant_name">گادري</h1>
+                    <p class="restaurant-subtitle" data-translate="restaurant_subtitle">تجربة فريدة لكل الأذواق</p>
+                </div>
+            </header>
+            
+            <div class="category-tabs" id="category-tabs">
+                <!-- Populated by JS -->
+            </div>
+            
+            <div class="menu-content" id="menu-content">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+        
+        <!-- Admin Panel (Functionality remains, styling updated) -->
+        <div id="admin-panel" class="admin-panel">
+            <div id="login-section" class="login-form">
+                <h2 data-translate="admin_login_title">🔐 تسجيل دخول المدير</h2>
+                <div class="form-group">
+                    <label data-translate="password_label">كلمة المرور:</label>
+                    <input type="password" id="admin-password" data-translate-placeholder="password_placeholder">
+                </div>
+                <button class="btn" onclick="adminLogin()" data-translate="login_btn">دخول</button>
+                <button class="btn btn-danger" onclick="backToMenu()" data-translate="back_to_menu_btn">العودة للمنيو</button>
+                <div id="login-error" class="error-message" style="display: none;"></div>
+            </div>
+            
+            <div id="admin-content" class="admin-content">
+                <div class="admin-header">
+                    <h2 data-translate="admin_dashboard_title">👑 لوحة تحكم المدير</h2>
+                    <div>
+                        <button class="btn" onclick="backToMenu()" data-translate="view_menu_btn">عرض المنيو</button>
+                        <button class="btn btn-danger" onclick="adminLogout()" data-translate="logout_btn">تسجيل خروج</button>
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <h3 data-translate="manage_sections_title">📁 إدارة الأقسام</h3>
+                    <div class="form-group">
+                        <input type="text" id="new-section-name-ar" placeholder="اسم القسم الجديد (عربي)">
+                        <input type="text" id="new-section-name-en" placeholder="New Section Name (English)">
+                        <button class="btn" onclick="addSection()" data-translate="add_section_btn">إضافة قسم</button>
+                    </div>
+                    <div id="sections-list"></div>
+                </div>
+                
+                <div class="admin-section">
+                    <h3 data-translate="manage_items_title">🍽️ إدارة الأصناف</h3>
+                    <button class="btn" onclick="showAddItemModal()" data-translate="add_item_btn">إضافة صنف جديد</button>
+                    <div id="items-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Item Modal -->
+    <div id="item-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeItemModal()">&times;</button>
+            <h3 id="modal-title" data-translate="add_new_item_title">إضافة صنف جديد</h3>
+            <form id="item-form">
+                <input type="hidden" id="item-id">
+                <div class="form-group">
+                    <label data-translate="item_name_label_ar">اسم الصنف (عربي):</label>
+                    <input type="text" id="item-name-ar" required>
+                </div>
+                 <div class="form-group">
+                    <label data-translate="item_name_label_en">Item Name (English):</label>
+                    <input type="text" id="item-name-en" required>
+                </div>
+                <div class="form-group">
+                    <label data-translate="price_label">السعر:</label>
+                    <input type="number" id="item-price" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label data-translate="section_label">القسم:</label>
+                    <select id="item-section" required></select>
+                </div>
+                <div class="form-group">
+                    <label data-translate="image_url_label">رابط الصورة (اختياري):</label>
+                    <input type="url" id="item-image" data-translate-placeholder="image_url_placeholder">
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn" data-translate="save_btn">حفظ</button>
+                    <button type="button" class="btn btn-danger" onclick="closeItemModal()" data-translate="cancel_btn">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc, writeBatch, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Your NEW web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_NEW_API_KEY",
+            authDomain: "YOUR_NEW_AUTH_DOMAIN",
+            projectId: "YOUR_NEW_PROJECT_ID",
+            storageBucket: "YOUR_NEW_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_NEW_MESSAGING_SENDER_ID",
+            appId: "YOUR_NEW_APP_ID",
+            measurementId: "YOUR_NEW_MEASUREMENT_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const sectionsCol = collection(db, 'sections');
+        const itemsCol = collection(db, 'items');
+
+        let currentLang = 'ar';
+        let allSections = [];
+        let allItems = [];
+        let currentSectionId = null;
+        let adminAttempts = 0;
+        const MAX_ATTEMPTS = 7;
+
+        const translations = {
+            ar: {
+                restaurant_name: "گادري", restaurant_subtitle: "تجربة فريدة لكل الأذواق",
+                no_sections_available: "لا توجد أقسام متاحة", no_items_in_section: "لا توجد أصناف في هذا القسم",
+                currency: "د.ع", admin_login_title: "🔐 تسجيل دخول المدير", password_label: "كلمة المرور:",
+                password_placeholder: "أدخل كلمة المرور", login_btn: "دخول", back_to_menu_btn: "العودة للمنيو",
+                admin_dashboard_title: "👑 لوحة تحكم المدير", view_menu_btn: "عرض المنيو", logout_btn: "تسجيل خروج",
+                manage_sections_title: "📁 إدارة الأقسام", add_section_btn: "إضافة قسم", delete_btn: "حذف",
+                manage_items_title: "🍽️ إدارة الأصناف", add_item_btn: "إضافة صنف جديد", edit_btn: "تعديل",
+                add_new_item_title: "إضافة صنف جديد", edit_item_title: "تعديل الصنف",
+                item_name_label_ar: "اسم الصنف (عربي):", item_name_label_en: "Item Name (English):",
+                price_label: "السعر:", section_label: "القسم:", choose_section: "اختر القسم",
+                image_url_label: "رابط الصورة (اختياري):", image_url_placeholder: "https://example.com/image.jpg",
+                save_btn: "حفظ", cancel_btn: "إلغاء", login_error: "كلمة المرور غير صحيحة. المحاولات المتبقية:",
+                max_attempts_error: "تم تجاوز الحد الأقصى للمحاولات. يرجى المحاولة لاحقاً.",
+                blocked_attempts_error: "تم حظر المحاولات لأسباب أمنية.", section_added_success: "تم إضافة القسم بنجاح",
+                item_delete_confirm: "هل أنت متأكد من حذف هذا الصنف؟",
+                section_delete_confirm: "هل أنت متأكد من حذف هذا القسم؟ سيتم حذف جميع الأصناف الموجودة فيه.",
+                section_deleted_success: "تم حذف القسم بنجاح", fill_fields_alert: "يرجى ملء جميع الحقول المطلوبة",
+                section_exists_alert: "يوجد قسم بهذا الاسم مسبقاً", enter_section_name_alert: "يرجى إدخال اسم القسم بالعربي والإنجليزي",
+            },
+            en: {
+                restaurant_name: "Gadry", restaurant_subtitle: "A Unique Taste For Everyone",
+                no_sections_available: "No Sections Available", no_items_in_section: "No Items In This Section",
+                currency: "IQD", admin_login_title: "🔐 Admin Login", password_label: "Password:",
+                password_placeholder: "Enter password", login_btn: "Login", back_to_menu_btn: "Back to Menu",
+                admin_dashboard_title: "👑 Admin Dashboard", view_menu_btn: "View Menu", logout_btn: "Logout",
+                manage_sections_title: "📁 Manage Sections", add_section_btn: "Add Section", delete_btn: "Delete",
+                manage_items_title: "🍽️ Manage Items", add_item_btn: "Add New Item", edit_btn: "Edit",
+                add_new_item_title: "Add New Item", edit_item_title: "Edit Item",
+                item_name_label_ar: "Item Name (Arabic):", item_name_label_en: "Item Name (English):",
+                price_label: "Price:", section_label: "Section:", choose_section: "Choose section",
+                image_url_label: "Image URL (Optional):", image_url_placeholder: "https://example.com/image.jpg",
+                save_btn: "Save", cancel_btn: "Cancel", login_error: "Incorrect password. Attempts remaining:",
+                max_attempts_error: "Maximum attempts exceeded. Please try again later.",
+                blocked_attempts_error: "Attempts have been been blocked for security reasons.", section_added_success: "Section added successfully",
+                item_delete_confirm: "Are you sure you want to delete this item?",
+                section_delete_confirm: "Are you sure you want to delete this section? All items within it will also be deleted.",
+                section_deleted_success: "Section deleted successfully", fill_fields_alert: "Please fill all required fields",
+                section_exists_alert: "A section with this name already exists", enter_section_name_alert: "Please enter the section name in Arabic and English",
+            }
+        };
+        
+        window.toggleLanguage = function() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+
+            document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-translate-placeholder');
+                 if (translations[currentLang][key]) {
+                    el.placeholder = translations[currentLang][key];
+                }
+            });
+            
+            document.getElementById('lang-btn').textContent = currentLang === 'ar' ? 'EN' : 'AR';
+            
+            renderAll();
+        }
+
+        function renderAll() {
+            renderCategoryTabs(allSections);
+            renderMenu(allItems);
+            if (document.getElementById('admin-content').style.display === 'block') {
+                renderAdminSections(allSections);
+                renderAdminItems(allItems, allSections);
+            }
+        }
+        
+        function renderCategoryTabs(sections) {
+            const tabsContainer = document.getElementById('category-tabs');
+            tabsContainer.innerHTML = '';
+            
+            sections.forEach(section => {
+                const activeClass = section.id === currentSectionId ? 'active' : '';
+                const name = currentLang === 'en' ? section.name_en : section.name_ar;
+                const button = document.createElement('button');
+                button.className = `category-tab ${activeClass}`;
+                button.textContent = name;
+                button.onclick = () => selectCategory(section.id);
+                tabsContainer.appendChild(button);
+            });
+        }
+
+        function renderMenu(items) {
+            const menuContent = document.getElementById('menu-content');
+            menuContent.innerHTML = ''; // Clear previous items
+            
+            if (!currentSectionId && allSections.length > 0) {
+                 currentSectionId = allSections[0].id;
+                 renderCategoryTabs(allSections);
+            }
+
+            if (allSections.length === 0) {
+                menuContent.innerHTML = `<div class="empty-state"><h3>${translations[currentLang].no_sections_available}</h3></div>`;
+                return;
+            }
+            
+            const sectionItems = items.filter(item => item.sectionId === currentSectionId);
+            
+            if (sectionItems.length === 0) {
+                menuContent.innerHTML = `<div class="empty-state"><h3>${translations[currentLang].no_items_in_section}</h3></div>`;
+                return;
+            }
+            
+            sectionItems.forEach(item => {
+                const imageStyle = item.image ? `background-image: url('${item.image}');` : '';
+                const name = currentLang === 'en' ? item.name_en : item.name_ar;
+                const itemElement = document.createElement('div');
+                itemElement.className = 'menu-item';
+                itemElement.innerHTML = `
+                    <div class="item-details">
+                        <div class="item-image" style="${imageStyle}">
+                            ${!item.image ? '<i class="fa-solid fa-utensils"></i>' : ''}
+                        </div>
+                        <div class="item-info">
+                            <div class="item-name">${name}</div>
+                            <div class="item-price">${item.price} ${translations[currentLang].currency}</div>
+                        </div>
+                    </div>
+                `;
+                menuContent.appendChild(itemElement);
+            });
+        }
+
+        function renderAdminSections(sections) {
+            const sectionsList = document.getElementById('sections-list');
+            sectionsList.innerHTML = '';
+            sections.forEach(section => {
+                const name = `${section.name_ar} / ${section.name_en}`;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'section-item';
+                itemDiv.innerHTML = `
+                    <h4>${name}</h4>
+                    <div>
+                        <button class="btn btn-danger" onclick="deleteSection('${section.id}')">${translations[currentLang].delete_btn}</button>
+                    </div>
+                `;
+                sectionsList.appendChild(itemDiv);
+            });
+        }
+
+        function renderAdminItems(items, sections) {
+            const itemsList = document.getElementById('items-list');
+            itemsList.innerHTML = '';
+            items.forEach(item => {
+                const section = sections.find(s => s.id === item.sectionId);
+                let sectionName = 'Unknown';
+                if(section) {
+                    sectionName = `${section.name_ar} / ${section.name_en}`;
+                }
+                const itemName = `${item.name_ar} / ${item.name_en}`;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'menu-item-admin';
+                itemDiv.innerHTML = `
+                    <div>
+                        <h4>${itemName}</h4>
+                        <p>${translations[currentLang].section_label} ${sectionName} | ${translations[currentLang].price_label} ${item.price} ${translations[currentLang].currency}</p>
+                    </div>
+                    <div>
+                        <button class="btn" onclick="editItem('${item.id}')">${translations[currentLang].edit_btn}</button>
+                        <button class="btn btn-danger" onclick="deleteItem('${item.id}')">${translations[currentLang].delete_btn}</button>
+                    </div>
+                `;
+                itemsList.appendChild(itemDiv);
+            });
+        }
+        
+        onSnapshot(sectionsCol, (snapshot) => {
+            allSections = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            if (!currentSectionId && allSections.length > 0) {
+                currentSectionId = allSections[0].id;
+            }
+            renderAll();
+        });
+
+        onSnapshot(itemsCol, (snapshot) => {
+            allItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderAll();
+        });
+
+        window.selectCategory = function(sectionId) {
+            currentSectionId = sectionId;
+            renderCategoryTabs(allSections);
+            renderMenu(allItems);
+        }
+
+        // --- Admin and Modal Functions (no logic change) ---
+        window.showAdminPanel = function() {
+            document.getElementById('customer-view').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('admin-content').style.display = 'none';
+        }
+        
+        window.backToMenu = function() {
+            document.getElementById('customer-view').style.display = 'block';
+            document.getElementById('admin-panel').style.display = 'none';
+            const url = new URL(window.location);
+            url.searchParams.delete('admin');
+            url.hash = '';
+            window.history.replaceState({}, document.title, url.pathname);
+        }
+
+        window.adminLogin = async function() {
+            const password = document.getElementById('admin-password').value;
+            const errorDiv = document.getElementById('login-error');
+            
+            if (adminAttempts >= MAX_ATTEMPTS) {
+                errorDiv.textContent = translations[currentLang].max_attempts_error;
+                errorDiv.style.display = 'block';
+                document.getElementById('admin-password').disabled = true;
+                return;
+            }
+            
+            // NOTE: Using a simple password for demonstration. Use a secure auth system in production.
+            if (password === 'altaj1997') {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'block';
+                document.getElementById('admin-password').value = '';
+                errorDiv.style.display = 'none';
+                adminAttempts = 0; 
+                renderAll();
+            } else {
+                adminAttempts++;
+                errorDiv.textContent = `${translations[currentLang].login_error} ${MAX_ATTEMPTS - adminAttempts}`;
+                errorDiv.style.display = 'block';
+                
+                if (adminAttempts >= MAX_ATTEMPTS) {
+                    errorDiv.textContent = translations[currentLang].blocked_attempts_error;
+                    document.getElementById('admin-password').disabled = true;
+                }
+            }
+        }
+        
+        window.adminLogout = function() {
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('admin-content').style.display = 'none';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-password').disabled = false;
+            adminAttempts = 0;
+            backToMenu();
+        }
+
+        window.addSection = async function() {
+            const nameAr = document.getElementById('new-section-name-ar').value.trim();
+            const nameEn = document.getElementById('new-section-name-en').value.trim();
+            if (!nameAr || !nameEn) { alert(translations[currentLang].enter_section_name_alert); return; }
+            try {
+                await addDoc(sectionsCol, { name_ar: nameAr, name_en: nameEn });
+                document.getElementById('new-section-name-ar').value = '';
+                document.getElementById('new-section-name-en').value = '';
+            } catch (e) { console.error("Error adding document: ", e); }
+        }
+
+        window.deleteSection = async function(id) {
+            if (!confirm(translations[currentLang].section_delete_confirm)) return;
+            try {
+                const batch = writeBatch(db);
+                const sectionDocRef = doc(db, 'sections', id);
+                batch.delete(sectionDocRef);
+                const q = query(itemsCol, where("sectionId", "==", id));
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach((itemDoc) => { batch.delete(itemDoc.ref); });
+                await batch.commit();
+                if (currentSectionId === id) { currentSectionId = allSections.length > 1 ? allSections.find(s => s.id !== id).id : null; }
+            } catch (e) { console.error("Error deleting section: ", e); }
+        }
+
+        window.deleteItem = async function(id) {
+            if (!confirm(translations[currentLang].item_delete_confirm)) return;
+            try { await deleteDoc(doc(db, 'items', id)); } catch (e) { console.error("Error deleting item: ", e); }
+        }
+
+        window.showAddItemModal = function() {
+            document.getElementById('modal-title').textContent = translations[currentLang].add_new_item_title;
+            document.getElementById('item-form').reset();
+            document.getElementById('item-id').value = '';
+            updateSectionOptions();
+            document.getElementById('item-modal').style.display = 'block';
+        }
+
+        window.editItem = function(id) {
+            const item = allItems.find(i => i.id === id);
+            if (!item) return;
+            document.getElementById('modal-title').textContent = translations[currentLang].edit_item_title;
+            document.getElementById('item-id').value = item.id;
+            document.getElementById('item-name-ar').value = item.name_ar;
+            document.getElementById('item-name-en').value = item.name_en;
+            document.getElementById('item-price').value = item.price;
+            document.getElementById('item-image').value = item.image || '';
+            updateSectionOptions();
+            document.getElementById('item-section').value = item.sectionId;
+            document.getElementById('item-modal').style.display = 'block';
+        }
+
+        window.closeItemModal = function() {
+            document.getElementById('item-modal').style.display = 'none';
+        }
+
+        function updateSectionOptions() {
+            const select = document.getElementById('item-section');
+            select.innerHTML = `<option value="">${translations[currentLang].choose_section}</option>`;
+            allSections.forEach(section => {
+                const name = currentLang === 'en' ? section.name_en : section.name_ar;
+                select.innerHTML += `<option value="${section.id}">${name}</option>`;
+            });
+        }
+        
+        document.getElementById('item-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('item-id').value;
+            const itemData = {
+                name_ar: document.getElementById('item-name-ar').value.trim(),
+                name_en: document.getElementById('item-name-en').value.trim(),
+                price: parseFloat(document.getElementById('item-price').value),
+                sectionId: document.getElementById('item-section').value,
+                image: document.getElementById('item-image').value.trim()
+            };
+            if (!itemData.name_ar || !itemData.name_en || isNaN(itemData.price) || !itemData.sectionId) {
+                alert(translations[currentLang].fill_fields_alert); return;
+            }
+            try {
+                if (id) { await updateDoc(doc(db, 'items', id), itemData); } 
+                else { await addDoc(itemsCol, itemData); }
+                closeItemModal();
+            } catch (e) { console.error("Error saving item: ", e); }
+        });
+        
+        window.addEventListener('click', function(e) {
+            if (e.target === document.getElementById('item-modal')) { closeItemModal(); }
+        });
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === '1' || window.location.hash === '#admin') {
+                showAdminPanel();
+            }
+        };
+
+        // Make functions globally accessible
+        window.deleteSection = deleteSection;
+        window.deleteItem = deleteItem;
+        window.editItem = editItem;
+    </script>
+</body>
+</html>
